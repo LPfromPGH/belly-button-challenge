@@ -1,6 +1,10 @@
 // Place URL in constant variable
 const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json"
 
+
+d3.json(url).then(function(data) {
+    console.log(data);
+});
 // default plots
 function init() {
     let dropdownMenu = d3.select("#selDataset");
@@ -16,7 +20,7 @@ function init() {
     });
 
     let name = names[0];
-
+    console.log(name);
 
 //name the functions for the charts
     demo(name);
@@ -24,8 +28,9 @@ function init() {
     bubble(name);
     });
 
+//build demographic info
 function demo(selectedValue) {
-    d3.json(url).then((data) => {console.log('Data: ${data');
+    d3.json(url).then((data) => {console.log(`Data: ${data}`);
     let metadata = data.metadata;
     let filteredData = metadata.filter((meta) => meta.id == selectedValue);
     let obj = filteredData[0]
@@ -33,12 +38,14 @@ function demo(selectedValue) {
     let entries = Object.entries(obj);
     entries.forEach(([key,value]) => {d3.select("#sample-metadata").append("h5").text(`${key}: ${value}`);
 });
-})
+    console.log(entries);
+});
 }
+//build bar chart
 function bar(selectedValue) {
     d3.json(url).then((data) => {console.log(`Data: ${data}`);
-    let samples = data.samples;
-    let filteredData = samples.filter((sample) => sample.id === selectedValue);
+    let sample = data.samples;
+    let filteredData = sample.filter((sample) => sample.id === selectedValue);
 
     let obj = filteredData[0];
 
@@ -54,6 +61,40 @@ function bar(selectedValue) {
     Plotly.newPlot("bar", trace);
 });
 }
+//build bubble chart
+function bubble(selectedValue) {
+    d3.json(url).then((data) => {console.log(`Data ${data}`);
+
+        let samples = data.samples;
+        let filteredData = samples.filter((sample) => sample.id === selectedValue);
+        let obj = filteredData[0];
+
+        let trace1 = [{
+            x: obj.otu_ids,
+            y: obj.sample_values,
+            text: obj.otu_labels,
+            mode: "markers",
+            marker: {
+                size: obj.sample_values, 
+                color: obj.otu_ids, 
+                colorscale: "Solar"
+            }
+        }];
+
+        let layout = {xaxis: {title: "OTU ID"}
+    };
+
+        Plotly.newPlot("bubble", trace1, layout);
+    });
+
+}
+
+function optionChanged(selectedValue) {
+    demo(selectedValue);
+    bar(selectedValue);
+    bubble(selectedValue)
+}
+
 }
 
 
