@@ -88,7 +88,7 @@ function bubble(selectedValue) {
     });
 
 }
-
+//This should update everything when the dropdown changes, but I can't get it to work and nothing on google has helped.
 function optionChanged(selectedValue) {
     demo(selectedValue);
     bar(selectedValue);
